@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro System Update</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: black;
+            color: #00ff41;
+            font-family: 'Press Start 2P', cursive; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        
+        }
+
+       #start-screen {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.image-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+        #keyboard-image {
+            max-width: 80%;
+            border: 4px solid #000000;
+            image-rendering: pixelated;
+        }
+
+        #start-button {
+            position: absolute;
+            top:66%;
+         transform: translate(-50%, -50%);
+        left: 18%;
+        transform: none;
+            background-color: #810000;
+            color: white;
+            border: 4px solid rgb(34, 34, 34);
+            padding: 30px 10px;
+            font-size: 16px;
+            font-family: 'Press Start 2P', cursive;
+            cursor: pointer;
+            box-shadow: 8px 8px 0px #880000;
+          
+            line-height: 30px;
+        }
+
+        #start-button:active {
+            box-shadow: 2px 2px 0px #880000;
+            transform: translate(4px, 4px);
+        }
+
+        #update-screen {
+            display: none;
+            text-align: center;
+            width: 90%;
+            max-width: 700px;
+        }
+
+        .loading-text {
+            font-size: 28px;
+            margin-bottom: 20px;
+            letter-spacing: 4px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            border: 6px solid #00ff41;
+            padding: 8px;
+            background-color: black;
+            display: flex;
+            align-items: center;
+            height: 50px;
+            box-sizing: border-box;
+        }
+
+        .progress-block-container {
+            display: flex;
+            gap: 6px; 
+            width: 100%;
+            height: 100%;
+        }
+
+        .block {
+            width: 30px; 
+            height: 100%;
+            background-color: #00ff41;
+            display: none; 
+        }
+
+        .message {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #00ff41;
+            height: 20px;
+            line-height: 1.5;
+             white-space: pre-line;
+
+        }
+
+        .please-wait {
+            margin-top: 20px;
+            font-size: 24px;
+            letter-spacing: 2px;
+        }
+
+    </style>
+</head>
+<body>
+
+ <div id="start-screen">
+    <div class="image-wrapper">
+        <img id="keyboard-image" src="https://i.imgur.com/BHeq4dy.png" alt="Start Update">
+        <button id="start-button">Start <br> Update first</button>
+    </div>
+</div>
+    <div id="update-screen">
+        <div class="loading-text">Loading...</div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-block-container" id="block-container">
+                </div>
+        </div>
+
+        <div class="please-wait" id="bottom-text">Please Wait</div>
+        <div class="message" id="status-msg">Initializing core...</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+    <script>
+function launchConfetti() {
+    const duration = 5000;
+    const end = Date.now() + duration;
+
+
+    (function frame() {
+      
+        confetti({
+            particleCount: 15,
+            angle: 60,
+            spread: 80,
+            origin: { x: 0 }
+        });
+
+       
+        confetti({
+            particleCount: 15,
+            angle: 120,
+            spread: 80,
+            origin: { x: 1 }
+        });
+
+       
+        confetti({
+            particleCount: 25,
+            spread: 120,
+            origin: { x: 0.5, y: 0.6 }
+        });
+
+        if (Date.now() < end) {
+            requestAnimationFrame(frame);
+        }
+    })();
+}
+
+        const startScreen = document.getElementById('start-screen');
+        const updateScreen = document.getElementById('update-screen');
+        const startButton = document.getElementById('start-button');
+        const blockContainer = document.getElementById('block-container');
+        const statusMsg = document.getElementById('status-msg');
+        const bottomText = document.getElementById('bottom-text');
+
+  const statusMessages = [
+    { fa: " در حال بهینه سازی مصرف قهوه تیم...", en: "Optimizing Team Caffeine Intake..." },
+    { fa: " در حال تبدیل باگ‌های قدیمی به ویژگی‌های جدید...", en: "Refactor legacy bugs into features...." },
+    { fa: " در حال کامپایل انگیزه‌های 1405... ", en: "Compiling 1405 motivation... [Warning: Low battery]" },
+    { fa: " در حال سینک کردن با واقعیت...", en: "Syncing with reality... [Error 404: Reality not found]" },
+    { fa: " در حال پاکسازی کدهای جادویی از سال 1400...", en: "Purging 'magic code' from 2015..." },
+    { fa: " در حال رفع مشکلاتی که هنوز به وجود نیامده‌اند...", en: "Fixing bugs that haven’t been created yet..." },
+    { fa: " در حال آموزش هوش مصنوعی برای فهمیدن جمله‌هایی که حتی خودمم نمی‌فهمم...",  en: "Training AI to understand sentences even I don't understand..." },
+    { fa: " در حال نهایی‌سازی نسخه سال 1405...", en: "Finalizing Year_Version_1.4.0.5..." }
+];
+
+        const totalBlocks = 19;
+        for (let i = 0; i < totalBlocks; i++) {
+            let b = document.createElement('div');
+            b.className = 'block';
+            blockContainer.appendChild(b);
+        }
+
+        startButton.addEventListener('click', () => {
+            startScreen.style.display = 'none';
+            updateScreen.style.display = 'block';
+            runRetroUpdate();
+        });
+
+        function runRetroUpdate() {
+            const blocks = document.querySelectorAll('.block');
+            let currentBlock = 0;
+
+            const interval = setInterval(() => {
+                if (currentBlock < blocks.length) {
+                    blocks[currentBlock].style.display = 'block';
+                    
+                    let currentLang = "en"; 
+                    let msgIndex = Math.floor((currentBlock / blocks.length) * statusMessages.length);
+                  const msg = statusMessages[msgIndex];
+statusMsg.innerHTML = `
+    <div style="direction: rtl;">${msg.fa}</div>
+    <div style="direction: ltr;">${msg.en}</div>
+`;
+                    
+                    currentBlock++;
+                } else {
+                    clearInterval(interval);
+                    
+                    
+                    bottomText.innerText = "SUCCESS!";
+                    statusMsg.style.color = "#FFD700";
+                    
+                    statusMsg.innerText = "🎉 Happy New Year 🎉";
+                    statusMsg.style.fontSize = "30px"; 
+
+                    
+                   launchConfetti();
+                }
+            }, 700); 
+        }
+    </script>
+</body>
+</html>
